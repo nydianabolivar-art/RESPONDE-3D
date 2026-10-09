@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RESPONDE 3D | Modelo</title>
+<style>
+:root{--ink:#20363e;--teal:#174e5a;--teal2:#287583;--paper:#f4f7f7;--white:#fff;--line:#d7e1e2;--muted:#607378;--pale:#eaf2f2;--gold:#946313;--goldbg:#fff6df}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "Segoe UI",Arial,sans-serif}
+header{background:var(--teal);color:#fff;padding:22px max(20px,calc((100vw - 1120px)/2))}
+.brand{font-size:12px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:#dbe9ea}
+h1{font-size:clamp(25px,3vw,34px);line-height:1.15;margin:7px 0}
+header p{margin:0;color:#e2eeee}
+main{max-width:1120px;margin:0 auto;padding:20px 18px 36px}
+.tabs{display:flex;gap:8px;margin:0 0 15px}
+.tab{background:#fff;border:1px solid var(--line);border-bottom:3px solid var(--teal2);border-radius:8px 8px 0 0;color:var(--teal);font-weight:700;padding:9px 18px}
+.notice{background:var(--goldbg);border:1px solid #ead9a8;border-radius:8px;padding:11px 14px;color:#624b1f;margin-bottom:16px;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(285px,350px) minmax(0,1fr);gap:16px;align-items:start}
+.card{background:var(--white);border:1px solid var(--line);border-radius:11px;padding:17px}
+h2{font-size:18px;color:var(--teal);margin:0 0 10px}
+h3{font-size:14px;margin:16px 0 7px}
+.help{font-size:13px;color:var(--muted);margin:0 0 12px}
+.field{margin:12px 0}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px 10px;border:1px solid #bacacc;border-radius:7px;background:white;color:var(--ink);font:inherit}
+.field input:focus,.field select:focus{outline:2px solid #91c5ca;border-color:var(--teal2)}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.measure-guide{margin:14px 0;padding:12px;background:#f6f9f9;border:1px solid #e1ebeb;border-radius:8px;font-size:12px;color:var(--muted)}
+.measure-guide h3{margin:0 0 8px;color:var(--teal)}
+.measure-guide-inner{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center}
+.measure-guide svg{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:7px}
+.measure-guide p{margin:5px 0}
+.measure-guide strong{color:var(--ink)}
+.number-tag{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;margin-right:4px;font-size:11px}
+button{border:0;border-radius:7px;background:var(--teal);color:white;font:600 13px "Segoe UI",Arial,sans-serif;padding:9px 12px;cursor:pointer}
+button:hover{background:#103d47}
+button.secondary{background:#e8f0f0;color:var(--teal);border:1px solid #c7d8da}
+button.secondary:hover{background:#dce9ea}
+.error{display:none;margin-top:10px;color:#8b3025;background:#fff0ed;border:1px solid #edc6bd;padding:8px 10px;border-radius:7px;font-size:12px}
+.right{display:grid;gap:14px}
+.canvas-wrap{height:360px;background:linear-gradient(180deg,#fbfdfd,#edf4f4);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+canvas:active{cursor:grabbing}
+.viewer-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 9px}
+.viewer-hint{font-size:12px;color:var(--muted)}
+.caption{font-size:12px;color:var(--muted);margin:7px 0 0}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.metric{background:white;border:1px solid var(--line);border-radius:9px;padding:12px}
+.metric-label{font-size:12px;color:var(--muted)}
+.metric-value{font-size:20px;color:var(--teal);font-weight:700;margin-top:3px}
+.metric-unit{font-size:11px;color:var(--muted);font-weight:400}
+.small-note{font-size:12px;color:var(--muted);margin:8px 0 0}
+.status{font-size:12px;color:var(--muted);min-height:18px;margin-top:8px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.right{grid-row:1}}
+@media(max-width:520px){main{padding:14px 10px 28px}.card{padding:14px}.canvas-wrap{height:275px}.metrics{grid-template-columns:1fr}.tab{width:100%;text-align:left}.measure-guide-inner{grid-template-columns:120px 1fr}.viewer-tools{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Proyecto de Aula · Cálculo Multivariado</div>
+  <h1>RESPONDE 3D</h1>
+  <p>Prueba cómo cambian la forma aproximada y el material al modificar algunas medidas.</p>
+</header>
+<main>
+  <nav class="tabs" aria-label="Pestañas de la herramienta">
+    <div class="tab" aria-current="page">Modelo</div>
+  </nav>
+
+  <div class="notice"><strong>Prototipo académico:</strong> usa las medidas de un maniquí o un caso simulado. La vista representa solo un tramo abierto y no corresponde a un diseño clínico para uso en personas.</div>
+
+  <div class="layout">
+    <section class="card" aria-label="Medidas del modelo">
+      <h2>¿Qué zona queremos representar?</h2>
+      <div class="field">
+        <label for="region">Selecciona una zona</label>
+        <select id="region">
+          <option value="wrist">Muñeca</option>
+          <option value="forearm">Antebrazo</option>
+          <option value="upperArm">Brazo (tramo superior)</option>
+          <option value="ankle">Tobillo</option>
+          <option value="lowerLeg">Pierna (tramo inferior)</option>
+        </select>
+        <div class="hint">La herramienta muestra un segmento sencillo, sin mano, pie ni articulaciones.</div>
+      </div>
+
+      <div class="measure-guide" aria-label="Guía visual de las medidas">
+        <h3>¿Dónde tomar cada medida?</h3>
+        <div class="measure-guide-inner">
+          <svg viewBox="0 0 170 210" role="img" aria-labelledby="guideTitle guideDesc">
+            <title id="guideTitle">Guía de medidas del tramo</title>
+            <desc id="guideDesc">Largo del segmento y diámetros rectos al inicio y al final.</desc>
+            <defs>
+              <marker id="arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse"><path d="M0,0 L7,3.5 L0,7 z" fill="#287583"/></marker>
+            </defs>
+            <path d="M67 30 Q85 25 103 30 L110 174 Q85 182 60 174 Z" fill="#e4f0f0" stroke="#287583" stroke-width="2"/>
+            <path d="M85 33 L85 174" stroke="#aac5c8" stroke-dasharray="4 4"/>
+            <line x1="43" y1="32" x2="43" y2="174" stroke="#287583" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <circle cx="25" cy="103" r="11" fill="#174e5a"/><text x="25" y="107" text-anchor="middle" fill="white" font-size="11" font-weight="700">1</text>
+            <line x1="68" y1="57" x2="101" y2="57" stroke="#287583" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <circle cx="121" cy="57" r="11" fill="#174e5a"/><text x="121" y="61" text-anchor="middle" fill="white" font-size="11" font-weight="700">2</text>
+            <line x1="63" y1="148" x2="107" y2="148" stroke="#287583" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <circle cx="129" cy="148" r="11" fill="#174e5a"/><text x="129" y="152" text-anchor="middle" fill="white" font-size="11" font-weight="700">3</text>
+            <text x="52" y="195" fill="#607378" font-size="10">Ancho recto, no contorno</text>
+          </svg>
+          <div>
+            <p><span class="number-tag">1</span><strong>Largo:</strong> campo “Largo del tramo”. Mide de un extremo al otro.</p>
+            <p><span class="number-tag">2</span><strong>Diámetro inicial:</strong> campo “Diámetro al inicio”. Mide en línea recta.</p>
+            <p><span class="number-tag">3</span><strong>Diámetro final:</strong> campo “Diámetro al final”. Mide en línea recta.</p>
+            <p>Usa medidas de maniquí o un caso simulado; el dibujo solo explica dónde medir.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Medidas del tramo</h3>
+      <div class="field">
+        <label for="length"><span class="number-tag">1</span>Largo del tramo <span class="metric-unit">(mm)</span></label>
+        <input id="length" type="number" min="40" max="400" step="1" value="100">
+        <div class="hint">Mide a lo largo del segmento, desde un extremo hasta el otro.</div>
+      </div>
+      <div class="field">
+        <label id="startLabel" for="diamStart"><span class="number-tag">2</span>Diámetro al inicio del tramo <span class="metric-unit">(mm)</span></label>
+        <input id="diamStart" type="number" min="20" max="200" step="1" value="55">
+        <div class="hint">Mide de lado a lado en línea recta. No midas alrededor del brazo o la pierna.</div>
+      </div>
+      <div class="field">
+        <label id="endLabel" for="diamEnd"><span class="number-tag">3</span>Diámetro al final del tramo <span class="metric-unit">(mm)</span></label>
+        <input id="diamEnd" type="number" min="20" max="220" step="1" value="65">
+      </div>
+      <div class="field">
+        <label for="coverage">Cobertura alrededor del segmento <span class="metric-unit">(grados)</span></label>
+        <input id="coverage" type="number" min="60" max="300" step="1" value="180">
+        <div class="hint">180° representa media vuelta; 270° representa tres cuartos de vuelta.</div>
+      </div>
+      <div class="field">
+        <label for="thickness">Espesor de la pared <span class="metric-unit">(mm)</span></label>
+        <input id="thickness" type="number" min="1" max="6" step="0.1" value="2">
+      </div>
+      <div class="field">
+        <label for="density">Densidad del material <span class="metric-unit">(g/cm³)</span></label>
+        <input id="density" type="number" min="0.1" max="10" step="0.01" value="1.24">
+        <div class="hint">Es un valor de referencia; puede cambiar según el filamento.</div>
+      </div>
+
+      <div id="errorBox" class="error" role="alert"></div>
+      <div id="status" class="status" aria-live="polite"></div>
+      <button id="resetBtn" class="secondary" type="button">Restablecer ejemplo</button>
+    </section>
+
+    <div class="right">
+      <section class="card">
+        <h2 id="previewTitle">Modelo aproximado · muñeca</h2>
+        <p class="help">La forma y las perforaciones se actualizan cuando cambias una medida.</p>
+        <div class="viewer-tools"><span class="viewer-hint">Arrastra con el mouse o el dedo para girar; también puedes usar las flechas del teclado.</span><button id="viewReset" class="secondary" type="button">Restablecer giro</button></div>
+        <div class="canvas-wrap"><canvas id="view" tabindex="0" role="img" aria-label="Modelo tridimensional aproximado; arrastra para girarlo"></canvas></div>
+        <p class="caption">Las perforaciones laterales muestran por dónde podrían pasar tiras de velcro. Son ilustrativas; el prototipo requiere revisión antes de imprimirlo.</p>
+      </section>
+
+      <section class="metrics" aria-label="Estimaciones">
+        <div class="metric"><div class="metric-label">Área de pared (menos huecos)</div><div class="metric-value"><span id="areaOut">—</span> <span class="metric-unit">mm²</span></div></div>
+        <div class="metric"><div class="metric-label">Volumen aproximado</div><div class="metric-value"><span id="volumeOut">—</span> <span class="metric-unit">mm³</span></div></div>
+        <div class="metric"><div class="metric-label">Material estimado</div><div class="metric-value"><span id="massOut">—</span> <span class="metric-unit">g</span></div></div>
+      </section>
+      <p class="small-note">La estimación descuenta el área aproximada de las perforaciones. Sirve para comparar cambios; el consumo real se revisa después en el laminador.</p>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  "use strict";
+  var el=function(id){return document.getElementById(id)};
+  var presets={
+    wrist:{label:"muñeca",start:"Diámetro al inicio (muñeca)",end:"Diámetro al final (antebrazo)",L:100,d0:55,d1:65},
+    forearm:{label:"antebrazo",start:"Diámetro al inicio (muñeca)",end:"Diámetro al final (cerca del codo)",L:210,d0:65,d1:85},
+    upperArm:{label:"brazo · tramo superior",start:"Diámetro al inicio (cerca del codo)",end:"Diámetro al final (cerca del hombro)",L:230,d0:85,d1:105},
+    ankle:{label:"tobillo",start:"Diámetro al inicio (tobillo)",end:"Diámetro al final (pierna)",L:120,d0:70,d1:90},
+    lowerLeg:{label:"pierna · tramo inferior",start:"Diámetro al inicio (tobillo)",end:"Diámetro al final (cerca de la rodilla)",L:260,d0:85,d1:125}
+  };
+  var canvas=el("view"),ctx=canvas.getContext("2d"),lastMesh=null;
+  var viewYaw=.62,viewPitch=.4,dragState=null;
+  var fields=["length","diamStart","diamEnd","coverage","thickness","density"];
+
+  function fmt(n,d){
+    return new Intl.NumberFormat("es-CO",{minimumFractionDigits:d||0,maximumFractionDigits:d===undefined?2:d}).format(n);
+  }
+  function read(){
+    return {
+      region:el("region").value,
+      length:Number(el("length").value),
+      d0:Number(el("diamStart").value),
+      d1:Number(el("diamEnd").value),
+      coverage:Number(el("coverage").value),
+      thickness:Number(el("thickness").value),
+      density:Number(el("density").value)
+    };
+  }
+  function validate(v){
+    if(!Number.isFinite(v.length)||v.length<40||v.length>400)return "El largo debe estar entre 40 y 400 mm.";
+    if(!Number.isFinite(v.d0)||v.d0<20||v.d0>200)return "El diámetro inicial debe estar entre 20 y 200 mm.";
+    if(!Number.isFinite(v.d1)||v.d1<20||v.d1>220)return "El diámetro final debe estar entre 20 y 220 mm.";
+    if(!Number.isFinite(v.coverage)||v.coverage<60||v.coverage>300)return "La cobertura debe estar entre 60° y 300°.";
+    if(!Number.isFinite(v.thickness)||v.thickness<1||v.thickness>6)return "El espesor debe estar entre 1 y 6 mm.";
+    if(!Number.isFinite(v.density)||v.density<0.1||v.density>10)return "La densidad debe estar entre 0,1 y 10 g/cm³.";
+    if(v.thickness>=Math.min(v.d0,v.d1)/2)return "El espesor debe ser menor que el radio del segmento.";
+    return "";
+  }
+  function calculate(v){
+    var r0=v.d0/2,r1=v.d1/2;
+    var slant=Math.sqrt(v.length*v.length+(r1-r0)*(r1-r0));
+    var angle=v.coverage*Math.PI/180;
+    var grossArea=angle*((r0+r1)/2)*slant;
+    var slots=slotSpec(v);
+    var holeArea=slots.pairs*2*slots.width*slots.length;
+    var area=Math.max(0,grossArea-holeArea);
+    var volume=area*v.thickness;
+    var mass=v.density*volume/1000;
+    return {area:area,volume:volume,mass:mass,holeCount:slots.pairs*2};
+  }
+  function slotSpec(v){
+    var pairs=Math.max(2,Math.min(5,Math.floor(v.length/70)+1));
+    var avgRadius=(v.d0+v.d1)/4;
+    var length=Math.max(8,Math.min(14,(v.length/(pairs+1))*.62));
+    var halfAngle=Math.min(.14,Math.max(.075,4/avgRadius));
+    return {pairs:pairs,length:length,halfAngle:halfAngle,width:avgRadius*2*halfAngle};
+  }
+  function buildMesh(v,stepsZ,stepsA){
+    var points=[],faces=[];
+    var a0=-v.coverage*Math.PI/360,a1=v.coverage*Math.PI/360;
+    var slots=slotSpec(v),avgRadius=(v.d0+v.d1)/4;
+    var edgeOffset=Math.min(.34,Math.max(.12,12/avgRadius));
+    var edgeAngles=[a0+edgeOffset,a1-edgeOffset];
+    var slotCenters=[];
+    for(var sc=0;sc<slots.pairs;sc++)slotCenters.push(v.length*(sc+1)/(slots.pairs+1));
+    function isSlot(z,a){
+      for(var zi=0;zi<slotCenters.length;zi++){
+        if(Math.abs(z-slotCenters[zi])<=slots.length/2){
+          for(var ai=0;ai<edgeAngles.length;ai++)if(Math.abs(a-edgeAngles[ai])<=slots.halfAngle)return true;
+        }
+      }
+      return false;
+    }
+    var outer=(stepsZ+1)*(stepsA+1);
+    function index(layer,i,j){return layer*outer+i*(stepsA+1)+j}
+    for(var layer=0;layer<2;layer++){
+      for(var i=0;i<=stepsZ;i++){
+        var u=i/stepsZ,z=u*v.length,r=(v.d0/2)+u*(v.d1-v.d0)/2-(layer?v.thickness:0);
+        for(var j=0;j<=stepsA;j++){
+          var t=a0+(a1-a0)*j/stepsA;
+          points.push([r*Math.cos(t),r*Math.sin(t),z]);
+        }
+      }
+    }
+    for(var i2=0;i2<stepsZ;i2++){
+      for(var j2=0;j2<stepsA;j2++){
+        var zMid=(i2+.5)/stepsZ*v.length;
+        var aMid=a0+(a1-a0)*(j2+.5)/stepsA;
+        if(isSlot(zMid,aMid))continue;
+        var a=index(0,i2,j2),b=index(0,i2+1,j2),c=index(0,i2+1,j2+1),d=index(0,i2,j2+1);
+        faces.push([a,b,c],[a,c,d]);
+        var ia=index(1,i2,j2),ib=index(1,i2+1,j2),ic=index(1,i2+1,j2+1),id=index(1,i2,j2+1);
+        faces.push([ia,ic,ib],[ia,id,ic]);
+      }
+    }
+    for(var k=0;k<stepsZ;k++){
+      var o0=index(0,k,0),o1=index(0,k+1,0),i0=index(1,k,0),i1=index(1,k+1,0);
+      faces.push([o0,i0,i1],[o0,i1,o1]);
+      var o2=index(0,k,stepsA),o3=index(0,k+1,stepsA),i2=index(1,k,stepsA),i3=index(1,k+1,stepsA);
+      faces.push([o2,o3,i3],[o2,i3,i2]);
+    }
+    for(var q=0;q<stepsA;q++){
+      var n0=index(0,0,q),n1=index(0,0,q+1),ni0=index(1,0,q),ni1=index(1,0,q+1);
+      faces.push([n0,n1,ni1],[n0,ni1,ni0]);
+      var f0=index(0,stepsZ,q),f1=index(0,stepsZ,q+1),fi0=index(1,stepsZ,q),fi1=index(1,stepsZ,q+1);
+      faces.push([f0,fi0,fi1],[f0,fi1,f1]);
+    }
+    return {points:points,faces:faces,length:v.length,holeCount:slots.pairs*2};
+  }
+  function project(p,w,h,scale,length){
+    var x=p[0]*Math.cos(viewYaw)-p[1]*Math.sin(viewYaw);
+    var y0=p[0]*Math.sin(viewYaw)+p[1]*Math.cos(viewYaw);
+    var centeredZ=p[2]-length/2;
+    var y=y0*Math.cos(viewPitch)-centeredZ*Math.sin(viewPitch);
+    var z=y0*Math.sin(viewPitch)+centeredZ*Math.cos(viewPitch);
+    return {x:w/2+x*scale,y:h/2-y*scale,z:z};
+  }
+  function normal(a,b,c){
+    var ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2];
+    var vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+    var x=uy*vz-uz*vy,y=uz*vx-ux*vz,z=ux*vy-uy*vx;
+    var n=Math.sqrt(x*x+y*y+z*z)||1;
+    return [x/n,y/n,z/n];
+  }
+  function draw(mesh){
+    var rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=Math.max(1,Math.floor(rect.width*dpr));
+    canvas.height=Math.max(1,Math.floor(rect.height*dpr));
+    ctx=canvas.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    var w=rect.width,h=rect.height;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle="#f6fafa";ctx.fillRect(0,0,w,h);
+    if(!mesh)return;
+    var raw=mesh.points;
+    var xs=raw.map(function(p){return p[0]}),ys=raw.map(function(p){return p[1]}),zs=raw.map(function(p){return p[2]});
+    var span=Math.max(Math.max.apply(null,xs)-Math.min.apply(null,xs),Math.max.apply(null,ys)-Math.min.apply(null,ys),Math.max.apply(null,zs)-Math.min.apply(null,zs),1);
+    var scale=Math.min(w,h)*.72/span;
+    var projected=raw.map(function(p){return project(p,w,h,scale,mesh.length)});
+    var order=mesh.faces.map(function(f){return {f:f,z:(projected[f[0]].z+projected[f[1]].z+projected[f[2]].z)/3}}).sort(function(a,b){return a.z-b.z});
+    order.forEach(function(item){
+      var f=item.f,a=raw[f[0]],b=raw[f[1]],c=raw[f[2]],n=normal(a,b,c);
+      var shade=Math.max(.32,Math.min(.88,.55+.28*Math.abs(n[2])+.12*Math.abs(n[0])));
+      var g=Math.round(90+100*shade);
+      ctx.beginPath();ctx.moveTo(projected[f[0]].x,projected[f[0]].y);
+      ctx.lineTo(projected[f[1]].x,projected[f[1]].y);ctx.lineTo(projected[f[2]].x,projected[f[2]].y);
+      ctx.closePath();ctx.fillStyle="rgb("+Math.round(g*.48)+","+g+","+Math.round(g*1.06)+")";ctx.fill();
+      ctx.strokeStyle="rgba(23,78,90,.16)";ctx.lineWidth=.45;ctx.stroke();
+    });
+    ctx.fillStyle="#38555d";ctx.font="12px Segoe UI,Arial";
+    ctx.fillText("Canaleta abierta · "+fmt(mesh.length,0)+" mm · "+mesh.holeCount+" huecos laterales",14,h-14);
+  }
+  function update(){
+    var v=read(),err=validate(v);
+    el("errorBox").style.display=err?"block":"none";el("errorBox").textContent=err;
+    if(err){
+      ["areaOut","volumeOut","massOut"].forEach(function(id){el(id).textContent="—"});
+      lastMesh=null;draw(null);return;
+    }
+    var result=calculate(v);
+    el("areaOut").textContent=fmt(result.area,0);
+    el("volumeOut").textContent=fmt(result.volume,0);
+    el("massOut").textContent=fmt(result.mass,2);
+    el("previewTitle").textContent="Modelo aproximado · "+presets[v.region].label;
+    lastMesh=buildMesh(v,48,56);
+    draw(lastMesh);
+  }
+  function loadPreset(key){
+    var p=presets[key]||presets.wrist;
+    el("length").value=p.L;el("diamStart").value=p.d0;el("diamEnd").value=p.d1;
+    el("coverage").value=180;el("thickness").value=2;el("density").value=1.24;
+    el("startLabel").innerHTML='<span class="number-tag">2</span>'+p.start+' <span class="metric-unit">(mm)</span>';
+    el("endLabel").innerHTML='<span class="number-tag">3</span>'+p.end+' <span class="metric-unit">(mm)</span>';
+    update();
+  }
+  fields.forEach(function(id){el(id).addEventListener("input",update)});
+  el("region").addEventListener("change",function(){loadPreset(el("region").value)});
+  el("resetBtn").addEventListener("click",function(){loadPreset(el("region").value)});
+  el("viewReset").addEventListener("click",function(){viewYaw=.62;viewPitch=.4;if(lastMesh)draw(lastMesh)});
+  canvas.addEventListener("pointerdown",function(event){
+    dragState={x:event.clientX,y:event.clientY};
+    canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener("pointermove",function(event){
+    if(!dragState)return;
+    var dx=event.clientX-dragState.x,dy=event.clientY-dragState.y;
+    dragState={x:event.clientX,y:event.clientY};
+    viewYaw+=dx*.012;
+    viewPitch=Math.max(-1.15,Math.min(1.15,viewPitch+dy*.012));
+    if(lastMesh)draw(lastMesh);
+  });
+  function stopDrag(){dragState=null}
+  canvas.addEventListener("pointerup",stopDrag);
+  canvas.addEventListener("pointercancel",stopDrag);
+  canvas.addEventListener("keydown",function(event){
+    var moved=true;
+    if(event.key==="ArrowLeft")viewYaw-=.12;
+    else if(event.key==="ArrowRight")viewYaw+=.12;
+    else if(event.key==="ArrowUp")viewPitch=Math.max(-1.15,viewPitch-.12);
+    else if(event.key==="ArrowDown")viewPitch=Math.min(1.15,viewPitch+.12);
+    else moved=false;
+    if(moved){event.preventDefault();if(lastMesh)draw(lastMesh)}
+  });
+  window.addEventListener("resize",function(){if(lastMesh)draw(lastMesh)});
+  loadPreset(el("region").value);
+})();
+</script>
+</body>
+</html>
